@@ -1,6 +1,19 @@
 const { usuarios, proximoId } =
     require('../data/db')
 
+    function indiceUsuario(filtro) {
+        if(!filtro) return -1
+        const { id, email} = filtro
+        if(id){
+            return usuarios
+                .findIndex(u => u.id === id)
+        }else if(email) {
+            return usuarios 
+                .findIndex( u => u.email === email)
+        }
+        return -1
+    }
+
 module.exports = {
     //{ nome, email, idade }
     novoUsuario(_, { dados }) {
@@ -31,15 +44,14 @@ module.exports = {
             excluidos[0] : null
     },
 
-    alterarUsuario(_, args) {
-        const i = usuarios
-            .findIndex(u => u.id === args.id)
+    alterarUsuario(_, { filtro, dados   }) {
+        const i = indiceUsuario(filtro)
         if (i < 0) return null
 
-        usuarios[i].nome  = args.nome
-        usuarios[i].email = args.email
-        if(args.idade){
-            usuarios[i].idade = args.idade 
+        usuarios[i].nome  = dados.nome
+        usuarios[i].email = dados.email
+        if(dados.idade){
+            usuarios[i].idade = dados.idade 
         }
 
         //OPÇÃO 01
